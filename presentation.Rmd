@@ -1,0 +1,69 @@
+---
+title: "Presentation Project"
+author: "Daniela Chávez"
+date: "15/4/2021"
+output: ioslides_presentation
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Shiny Presentation
+
+The activity's purpose is to to show some of the characteristics of a Shiny application, a page was made that requests information from the student (thought of a child from 8 to 9 years old), using radiobuttons, graphics, tabs, etc. to do basic arithmetic with two numbers, tabulating and graphing their results. 
+
+## Steps
+
+1. The user type a name, two numbers and chose an arithmetic operation
+2. The screen is divided into two parts, one where the data is entered (sidebar) and the other (mainbar) where the results are shown in two tabs
+
+## My app
+
+```{r primera}
+library(shiny)
+operaciones<-c("Add","Substract","Multiply","Divide")
+tags$h4("This is an exercise designed for childrens ages 8-9")
+inputPanel(
+  textInput("box1","What's your name?:", value="My name is" ),
+            numericInput("numeric1","Enter first number", value=0, min = 0, max = 100,step=1),
+            numericInput("numeric2","Enter second number",value = 0, min=0, max = 100,step= 1),
+            radioButtons("opc","Operation",operaciones)
+)
+
+
+```
+
+
+## Outcomes
+
+```{r Resultados}
+renderText(input$box1) 
+    model<-reactive({
+        X<-input$numeric1
+        Y<-input$numeric2
+        if(input$opc=="Add")
+            multi<-X+Y
+        else if(input$opc=="Substract")
+            multi<-X-Y
+        else if(input$opc=="Divide")
+            multi<-X/Y
+        else multi<-X*Y
+    })
+    
+    renderText({paste("You choose:",input$opc)})
+    renderText({paste("Answer: ",model())})
+    
+    model2<-reactive({
+    s<-input$numeric1+input$numeric2
+    r<-input$numeric1-input$numeric2
+    m<-input$numeric1*input$numeric2
+    d<-input$numeric1/input$numeric2
+    d<-data.frame("Order"=c("1","2","3","4"),"Operation"=c("Add","Substract","Multiply","Divide"), "Outcome"=c(s,r,m,d))
+    })
+    tags$h4(br(), "The next tab shows all outputs")
+    renderTable(model2())
+```
+
+
